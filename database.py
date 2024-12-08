@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Optional
+from typing import Optional, Union
 
 from model import Book
 
@@ -8,6 +8,7 @@ class LibraryManager:
     def __init__(self, db_path: str = "Books.db"):
         """Инициализация класса LibraryManager и подключение к базе данных."""
         self.conn: sqlite3.Connection = sqlite3.connect(db_path)
+        self.conn.row_factory = sqlite3.Row
         self.cur: sqlite3.Cursor = self.conn.cursor()
         self.create_table()
 
@@ -34,36 +35,33 @@ class LibraryManager:
             self.conn.commit()
             print(f"Книга {book.title} добавлена.")
 
-    def list_books(self, title: Optional[str] = None, author: Optional[str] = None, year: Optional[int] = None) -> None:
+    def list_books(self, **filters) -> None:
         """Выводит список книг, соответствующих критериям поиска."""
         query: str = "SELECT * FROM library WHERE 1=1"
-        parameters: dict[str, Optional[str | int]] = {}
+        parameters: dict[str, Optional[Union[str, int]]] = {}
+        filter_conditions = {
+            "title": "AND title LIKE :title",
+            "author": "AND author LIKE :author",
+            "year": "AND year = :year"
+        }
+        for field, condition in filter_conditions.items():
+            if field in filters and filters[field] is not None:
+                query += f" {condition}"
+                parameters[field] = f"%{filters[field]}%" if field in {"title", "author"} else filters[field]
 
-        if title:
-            query += " AND title LIKE :title"
-            parameters["title"] = f"%{title}%"
-        if author:
-            query += " AND author LIKE :author"
-            parameters["author"] = f"%{author}%"
-        if year:
-            query += " AND year = :year"
-            parameters["year"] = year
-
-        with self.conn:
-            self.cur.execute(query, parameters)
-            books: list[tuple[int, str, str, int, str]] = self.cur.fetchall()
-            if not books:
-                print("\nНет книг, соответствующих заданным параметрам.\n")
-            else:
-                headers = ["ID", "Название", "Автор", "Год", "Статус"]
-                column_widths = [max(len(str(row[i])) for row in books + [headers]) for i in range(len(headers))]
-                row_format = " | ".join(f"{{:<{width}}}" for width in column_widths)
-                print("\n" + "=" * (sum(column_widths) + len(headers) * 3 - 1))
-                print(row_format.format(*headers))
-                print("=" * (sum(column_widths) + len(headers) * 3 - 1))
-                for book in books:
-                    print(row_format.format(*book))
-                print("=" * (sum(column_widths) + len(headers) * 3 - 1) + "\n")
+        self.cur.execute(query, parameters)
+        results = self.cur.fetchall()
+        books = []
+        for result in results:
+            book = Book(
+                title=result["title"],
+                author=result["author"],
+                year=result["year"],
+                status=result["status"]
+            )
+            print(book)
+            books.append(book)
+        return books
 
     def edit_book(self, book_id: int, status: str) -> None:
         """Изменяет статус книги по ID."""

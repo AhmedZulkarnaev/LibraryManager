@@ -1,6 +1,7 @@
 from typing import Optional
 
 from database import LibraryManager, Book
+from json_data import save_books_to_json
 
 
 def main() -> None:
@@ -15,6 +16,7 @@ def main() -> None:
     print("  exit - выйти из программы")
 
     while True:
+
         command: str = input("\nВведите команду: ").lower()
 
         if command == "add":
@@ -35,7 +37,21 @@ def main() -> None:
             author: Optional[str] = input("Введите автора книги: ") or None
             year: Optional[str] = input("Введите год издания: ") or None
             year_int: Optional[int] = int(year) if year else None
-            manager.list_books(title=title, author=author, year=year_int)
+            books = manager.list_books(title=title, author=author, year=year_int)
+            if not books:
+                print("\nНет книг, соответствующих заданным параметрам.\n")
+            print("\nСписок найденных книг:")
+            headers = ["ID", "Название", "Автор", "Год", "Статус"]
+            print("=" * 70)
+            print("{:<5} | {:<20} | {:<20} | {:<5} | {:<15}".format(*headers))
+            print("=" * 70)
+            for idx, book in enumerate(books, start=1):  # Используем индекс enumerate
+                print(
+                    "{:<5} | {:<20} | {:<20} | {:<5} | {:<15}".format(
+                        idx, book.title, book.author, book.year, book.status
+                    )
+                )
+            print("=" * 70)
 
         elif command == "edit":
             try:
@@ -55,6 +71,7 @@ def main() -> None:
         elif command == "exit":
             print("Выход из программы.")
             manager.close()
+            save_books_to_json(books, "library.json")
             break
 
         else:
