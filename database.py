@@ -32,7 +32,6 @@ class LibraryManager:
                 "INSERT INTO library (title, author, year, status) VALUES (?, ?, ?, ?)",
                 (book.title, book.author, book.year, book.status),
             )
-            self.conn.commit()
             print(f"Книга {book.title} добавлена.")
 
     def list_books(self, **filters) -> None:
@@ -54,6 +53,7 @@ class LibraryManager:
         books = []
         for result in results:
             book = Book(
+                book_id=result["id"],
                 title=result["title"],
                 author=result["author"],
                 year=result["year"],
@@ -65,17 +65,25 @@ class LibraryManager:
 
     def edit_book(self, book_id: int, status: str) -> None:
         """Изменяет статус книги по ID."""
-        with self.conn:
-            self.cur.execute("UPDATE library SET status=? WHERE id=?", (status, book_id))
-            self.conn.commit()
-            print(f"Статус книги с ID {book_id} изменен.")
+        try:
+            with self.conn:
+                self.cur.execute("UPDATE library SET status=? WHERE id=?", (status, book_id))
+                if self.cur.rowcount == 0:
+                    raise ValueError(f"Книга с ID {book_id} не существует.")
+                print(f"Статус книги с ID {book_id} изменен.")
+        except ValueError as e:
+            print(e)
 
     def remove_book(self, book_id: int) -> None:
         """Удаляет книгу по ID."""
-        with self.conn:
-            self.cur.execute("DELETE FROM library WHERE id=?", (book_id,))
-            self.conn.commit()
-            print(f"Книга с ID {book_id} удалена.")
+        try:
+            with self.conn:
+                self.cur.execute("DELETE FROM library WHERE id=?", (book_id,))
+                if self.cur.rowcount == 0:
+                    raise ValueError(f"Книга с ID {book_id} не существует.")
+                print(f"Книга с ID {book_id} успешно удалена.")
+        except ValueError as e:
+            print(e)
 
     def close(self) -> None:
         """Закрывает соединение с базой данных."""

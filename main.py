@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 
 from database import LibraryManager, Book
 from json_data import save_books_to_json
@@ -20,13 +21,11 @@ def main() -> None:
         command: str = input("\nВведите команду: ").lower()
 
         if command == "add":
-            title: str = input("Введите название книги: ").strip()
-            author: str = input("Введите автора книги: ").strip()
-            year: str = input("Введите год издания: ").strip()
-            status: str = "в наличии"
             try:
-                year_int: int = int(year)
-                book: Book = Book(title, author, year_int, status)
+                title: str = input("Введите название книги: ")
+                author: str = input("Введите автора книги: ")
+                year: int = int(input("Введите год издания(формат YYYY): "))
+                book: Book = Book(title, author, year)
                 manager.add_book(book)
             except ValueError:
                 print("Год издания должен быть числом.")
@@ -45,35 +44,34 @@ def main() -> None:
             print("=" * 70)
             print("{:<5} | {:<20} | {:<20} | {:<5} | {:<15}".format(*headers))
             print("=" * 70)
-            for idx, book in enumerate(books, start=1):  # Используем индекс enumerate
+            for idx, book in enumerate(books, start=1):
                 print(
                     "{:<5} | {:<20} | {:<20} | {:<5} | {:<15}".format(
-                        idx, book.title, book.author, book.year, book.status
+                        book.id, book.title, book.author, book.year, book.status
                     )
                 )
             print("=" * 70)
 
         elif command == "edit":
             try:
-                book_id: int = int(input("Введите ID книги для изменения: ").strip())
-                status: str = input("Введите новый статус книги: ").strip()
+                book_id: int = int(input("Введите ID книги для изменения: "))
+                status: str = input("Введите новый статус книги: ")
                 manager.edit_book(book_id, status)
             except ValueError:
-                print("ID должен быть числом.")
+                print("id должен быть числом типа int")
 
         elif command == "remove":
             try:
-                book_id: int = int(input("Введите ID книги для удаления: ").strip())
+                book_id: int = int(input("Введите ID книги для удаления: "))
                 manager.remove_book(book_id)
             except ValueError:
-                print("ID должен быть числом.")
+                print("id должен быть числом типа int")
 
         elif command == "exit":
             print("Выход из программы.")
             manager.close()
             save_books_to_json(books, "library.json")
             break
-
         else:
             print("Неизвестная команда. Пожалуйста, попробуйте снова.")
 

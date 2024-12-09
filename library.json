@@ -3,56 +3,14 @@
         "id": 1,
         "title": "Python",
         "author": "Mark Lutc",
-        "date": 1999,
-        "status": "в наличии"
+        "date": 1996,
+        "status": "Выдана"
     },
     {
         "id": 2,
-        "title": "test",
-        "author": "test",
-        "date": 1323,
-        "status": "в наличии"
-    },
-    {
-        "id": 3,
-        "title": "test2",
-        "author": "test",
-        "date": 1785,
-        "status": "в наличии"
-    },
-    {
-        "id": 4,
-        "title": "test2",
-        "author": "test",
-        "date": 1788,
-        "status": "в наличии"
-    },
-    {
-        "id": 5,
-        "title": "java",
-        "author": "sfds",
-        "date": 2044,
-        "status": "в наличии"
-    },
-    {
-        "id": 6,
-        "title": "Python",
-        "author": "afkfe",
-        "date": 1203,
-        "status": "в наличии"
-    },
-    {
-        "id": 7,
-        "title": "testsss",
-        "author": "tesss",
-        "date": 1203,
-        "status": "в наличии"
-    },
-    {
-        "id": 8,
-        "title": "wgfwg",
-        "author": "eger",
-        "date": 1203,
-        "status": "в наличии"
+        "title": "C++",
+        "author": "Adam Irbaiev",
+        "date": 2005,
+        "status": "В наличии"
     }
 ]
