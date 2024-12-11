@@ -42,9 +42,11 @@
 2. Склонируйте репозиторий:
    ```bash
    git clone https://github.com/username/library-management.git
-3. Перейдите в папку проекта:
+3. Перейдите в папку проекта и установите зависимости:
    ```bash
    cd library-management
+   pip install -r requirements.txt
+   
 4. Запустите программу:
    ```bash
    python main.py
