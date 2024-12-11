@@ -3,14 +3,7 @@
         "id": 1,
         "title": "Python",
         "author": "Mark Lutc",
-        "date": 1996,
-        "status": "Выдана"
-    },
-    {
-        "id": 2,
-        "title": "C++",
-        "author": "Adam Irbaiev",
-        "date": 2005,
-        "status": "В наличии"
+        "year": "1999",
+        "status": "выдана"
     }
 ]

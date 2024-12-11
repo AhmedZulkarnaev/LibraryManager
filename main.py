@@ -1,79 +1,49 @@
-from typing import Optional
-from datetime import datetime
-
-from database import LibraryManager, Book
-from json_data import save_books_to_json
+from crud import Library
 
 
-def main() -> None:
-    """Основная функция приложения."""
-    manager: LibraryManager = LibraryManager()
-    print("Добро пожаловать в управление библиотекой!")
-    print("Команды:")
-    print("  add - добавить книгу")
-    print("  list - показать список книг")
-    print("  edit - изменить статус книги")
-    print("  remove - удалить книгу по ID")
-    print("  exit - выйти из программы")
+def main():
+    library = Library()
 
     while True:
+        print("\n1. Добавить книгу")
+        print("2. Удалить книгу")
+        print("3. Найти книгу")
+        print("4. Показать все книги")
+        print("5. Изменить статус книги")
+        print("6. Выход")
 
-        command: str = input("\nВведите команду: ").lower()
+        choice = input("Выберите действие: ")
 
-        if command == "add":
+        if choice == "1":
+            title = input("Введите название книги: ")
+            author = input("Введите автора книги: ")
+            year = input("Введите год издания книги: ")
+            library.add_book(title, author, year)
+        elif choice == "2":
             try:
-                title: str = input("Введите название книги: ")
-                author: str = input("Введите автора книги: ")
-                year: int = int(input("Введите год издания(формат YYYY): "))
-                book: Book = Book(title, author, year)
-                manager.add_book(book)
+                book_id = int(input("Введите ID книги для удаления: "))
+                library.delete_book(book_id)
             except ValueError:
-                print("Год издания должен быть числом.")
-
-        elif command == "list":
-            print("Введите одно из ключевых слов, книги которых вы хотите найти, иначе пропустите")
-            title: Optional[str] = input("Введите название книги: ") or None
-            author: Optional[str] = input("Введите автора книги: ") or None
-            year: Optional[str] = input("Введите год издания: ") or None
-            year_int: Optional[int] = int(year) if year else None
-            books = manager.list_books(title=title, author=author, year=year_int)
-            if not books:
-                print("\nНет книг, соответствующих заданным параметрам.\n")
-            print("\nСписок найденных книг:")
-            headers = ["ID", "Название", "Автор", "Год", "Статус"]
-            print("=" * 70)
-            print("{:<5} | {:<20} | {:<20} | {:<5} | {:<15}".format(*headers))
-            print("=" * 70)
-            for idx, book in enumerate(books, start=1):
-                print(
-                    "{:<5} | {:<20} | {:<20} | {:<5} | {:<15}".format(
-                        book.id, book.title, book.author, book.year, book.status
-                    )
-                )
-            print("=" * 70)
-
-        elif command == "edit":
-            try:
-                book_id: int = int(input("Введите ID книги для изменения: "))
-                status: str = input("Введите новый статус книги: ")
-                manager.edit_book(book_id, status)
-            except ValueError:
-                print("id должен быть числом типа int")
-
-        elif command == "remove":
-            try:
-                book_id: int = int(input("Введите ID книги для удаления: "))
-                manager.remove_book(book_id)
-            except ValueError:
-                print("id должен быть числом типа int")
-
-        elif command == "exit":
-            print("Выход из программы.")
-            manager.close()
-            save_books_to_json(books, "library.json")
+                print("id не может быть пустым")
+        elif choice == "3":
+            search_term = input("Введите поисковый запрос (название, автор или год): ")
+            books = library.find_books(search_term)
+            if books:
+                for book in books:
+                    print(
+                        f"ID: {book.id}, Title: {book.title}, Author: {book.author}, Year: {book.year}, Status: {book.status}")
+            else:
+                print("Книги не найдены.")
+        elif choice == "4":
+            library.display_books()
+        elif choice == "5":
+            book_id = int(input("Введите ID книги для изменения статуса: "))
+            new_status = input("Введите новый статус (в наличии/выдана): ")
+            library.update_status(book_id, new_status)
+        elif choice == "6":
             break
         else:
-            print("Неизвестная команда. Пожалуйста, попробуйте снова.")
+            print("Неверный выбор. Попробуйте снова.")
 
 
 if __name__ == "__main__":
