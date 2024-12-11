@@ -1,4 +1,5 @@
 import json
+
 from model import Book
 
 
@@ -43,7 +44,7 @@ class Library:
         with open(self.filename, "w", encoding="utf-8") as file:
             json.dump([book.__dict__ for book in self.books], file, ensure_ascii=False, indent=4)
 
-    def add_book(self, title, author, year):
+    def add_book(self, title: str, author: str, year: int):
         """
         Добавляет новую книгу в библиотеку.
 
@@ -53,11 +54,11 @@ class Library:
             year (int): Год издания книги.
         """
         new_book = Book(title, author, year)
-        new_book.id = len(self.books) + 1  # Генерация уникального ID
+        new_book.id = len(self.books) + 1
         self.books.append(new_book)
         self.save_books()
 
-    def delete_book(self, book_id):
+    def delete_book(self, book_id: int):
         """
         Удаляет книгу по ID.
 
@@ -74,12 +75,12 @@ class Library:
         else:
             print("Книга с таким id не найдена.")
 
-    def find_books(self, search_term):
+    def find_books(self, search_term: int | str) -> list:
         """
         Ищет книги по строке поиска (название, автор или год).
 
         Аргументы:
-            search_term (str): Строка поиска.
+            search_term (str|int): Строка поиска.
 
         Возвращает:
             list: Список книг, удовлетворяющих поисковому запросу.
@@ -92,7 +93,7 @@ class Library:
                 results.append(book)
         return results
 
-    def find_book_by_id(self, book_id):
+    def find_book_by_id(self, book_id: int):
         """
         Ищет книгу по ID.
 
@@ -140,5 +141,3 @@ class Library:
                     f"ID: {book.id}, Title: {book.title}, Author: {book.author}, Year: {book.year}, Status: {book.status}")
         else:
             print("В библиотеке нет книг.")
-
-
